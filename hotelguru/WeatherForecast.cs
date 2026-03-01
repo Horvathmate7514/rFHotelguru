@@ -10,7 +10,8 @@ namespace hotelguru
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 
         public string? Summary { get; set; } //Cucc3
+        public string? gg { get; set; } // GG
 
-        public string helo { get; set; }
+        public string halo { get; set; }
     }
 }
