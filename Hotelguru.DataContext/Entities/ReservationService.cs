@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Hotelguru.DataContext.Entities
+{
+    public class ReservationService
+    {
+        public int Id { get; set; }
+        public int ReservationId { get; set; }
+        public Reservation? Reservation { get; set; }
+
+        public int Quantity { get; set; }
+        public int ServiceId { get; set; }
+        public Service? Service { get; set; }
+
+        public decimal ChargedPrice { get; set; }
+
+        public DateTime OrderedAt { get; set; }
+    }
+}
