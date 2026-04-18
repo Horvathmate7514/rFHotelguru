@@ -10,6 +10,8 @@ namespace Hotelguru.DataContext.Context
 {
     public class AppDbContext : DbContext
     {
+
+
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
@@ -23,8 +25,20 @@ namespace Hotelguru.DataContext.Context
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Facility> Facilities { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Role> Roles { get; set; }
 
-        
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+         
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Address)      
+                .WithOne(a => a.User)         
+                .HasForeignKey<User>(u => u.AddressId);
+        }
+
 
 
     }

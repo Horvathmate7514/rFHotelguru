@@ -4,6 +4,7 @@ using Hotelguru.DataContext.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418160115_RoleCreate")]
+    partial class RoleCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,6 +57,9 @@ namespace Hotelguru.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Addresses");
                 });
@@ -272,9 +278,6 @@ namespace Hotelguru.DataContext.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AddressId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -293,10 +296,6 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique()
-                        .HasFilter("[AddressId] IS NOT NULL");
-
                     b.ToTable("Users");
                 });
 
@@ -313,6 +312,17 @@ namespace Hotelguru.DataContext.Migrations
                     b.HasIndex("UsersId");
 
                     b.ToTable("RoleUser");
+                });
+
+            modelBuilder.Entity("Hotelguru.DataContext.Entities.Address", b =>
+                {
+                    b.HasOne("Hotelguru.DataContext.Entities.User", "User")
+                        .WithOne("Address")
+                        .HasForeignKey("Hotelguru.DataContext.Entities.Address", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Facility", b =>
@@ -382,15 +392,6 @@ namespace Hotelguru.DataContext.Migrations
                     b.Navigation("RoomType");
                 });
 
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.User", b =>
-                {
-                    b.HasOne("Hotelguru.DataContext.Entities.Address", "Address")
-                        .WithOne("User")
-                        .HasForeignKey("Hotelguru.DataContext.Entities.User", "AddressId");
-
-                    b.Navigation("Address");
-                });
-
             modelBuilder.Entity("RoleUser", b =>
                 {
                     b.HasOne("Hotelguru.DataContext.Entities.Role", null)
@@ -406,11 +407,6 @@ namespace Hotelguru.DataContext.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.Address", b =>
-                {
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Reservation", b =>
                 {
                     b.Navigation("ReservationService");
@@ -423,6 +419,9 @@ namespace Hotelguru.DataContext.Migrations
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.User", b =>
                 {
+                    b.Navigation("Address")
+                        .IsRequired();
+
                     b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
