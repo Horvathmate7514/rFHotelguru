@@ -12,17 +12,14 @@ namespace Hotelguru.DataContext.Entities
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Mobile { get; set; }
+        public int? AddressId { get; set; } 
         public Address Address { get; set; }
         public string Password { get; set; }
 
         public ICollection<Reservation> Reservations { get; set; } = new List<Reservation>();
 
+        public List<Role> Roles  { get; set; }
 
     }
-    public enum Role
-    {
-        Guest=0,
-        Receptionist =1,
-        Admin = 2,
-    }
+   
 }
