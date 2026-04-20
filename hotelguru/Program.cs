@@ -11,7 +11,6 @@ namespace hotelguru
         {
             var builder = WebApplication.CreateBuilder(args);
 
-           
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddOpenApi();
@@ -24,11 +23,7 @@ namespace hotelguru
                 c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "HotelGuru API", Version = "v1" });
             });
 
-
-
             //builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
-
-
             builder.Services.AddAutoMapper(cfg =>
             {
                 cfg.AddProfile<AutoMapperProfile>();
@@ -38,9 +33,21 @@ namespace hotelguru
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
 
+
+           
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173") 
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
+
             var app = builder.Build();
 
-        
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -48,9 +55,12 @@ namespace hotelguru
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "HotelGuru API v1");
-                  
                 });
             }
+
+          
+            app.UseCors("AllowFrontend");
+          
 
             app.UseHttpsRedirection();
             app.UseAuthorization();
