@@ -13,12 +13,14 @@ namespace Hotelguru.DataContext.Entities
         public User? User { get; set; }
         public int RoomId { get; set; }
         public Room? Room { get; set; }
-        public DateTime CheckInDate { get; set; }
-        public DateTime CheckOutDate { get; set; }
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public DateTime? CheckInDate { get; set; }
+        public DateTime? CheckOutDate { get; set; }
 
         public string Status { get; set; }
         public DateTime CancellationDeadline { get; set; }
 
-        public ICollection<ReservationService> ReservationService { get; set; } = new List<ReservationService>();
+        public List<ReservationBenefit> ReservationBenefits { get; set; }
     }
 }
