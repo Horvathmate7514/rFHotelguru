@@ -15,6 +15,7 @@ namespace Hotelguru.Services
     {
         Task<RoleDto> RoleCreateAsync(RoleCreateDto dto);
         Task<RoleDto> RoleDeleteAsync(RoleDeleteDto dto);
+        Task<List<RoleDto>> RoleListAsync();
     }
     public class RoleService : IRoleService
     {
@@ -46,6 +47,11 @@ namespace Hotelguru.Services
             _context.Roles.Remove(role);
             await _context.SaveChangesAsync();
             return _mapper.Map<RoleDto>(role);
+        }
+        public async Task<List<RoleDto>> RoleListAsync()
+        {
+            var roles = await _context.Roles.ToListAsync();
+            return _mapper.Map<List<RoleDto>>(roles);
         }
     }
 }
