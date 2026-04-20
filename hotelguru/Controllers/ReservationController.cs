@@ -39,5 +39,31 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        public async Task<ActionResult<List<ReservationDto>>> List()
+        {
+            try
+            {
+                var result = await _reservationService.ReservationListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("{userID}")]
+        public async Task<ActionResult<List<ReservationDto>>> ListByUserID(int userID)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationListByUserIDAsync(userID);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
