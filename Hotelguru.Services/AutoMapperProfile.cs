@@ -21,10 +21,12 @@ namespace Hotelguru.Services
             CreateMap<AddressUpdateDto, Address>()
                 .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
-
+            CreateMap<Reservation, ReservationDto>().ReverseMap();
+            CreateMap<ReservationCreateDto, Reservation>();
+            CreateMap<ReservationCancelDto, Reservation>();
 
             CreateMap<Role, RoleDto>().ReverseMap();
-
+            CreateMap<RoleCreateDto, Role>();
 
 
             CreateMap<Room, RoomDto>();

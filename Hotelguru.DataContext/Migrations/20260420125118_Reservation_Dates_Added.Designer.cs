@@ -4,6 +4,7 @@ using Hotelguru.DataContext.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420125118_Reservation_Dates_Added")]
+    partial class Reservation_Dates_Added
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,12 +76,12 @@ namespace Hotelguru.DataContext.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("RoomID")
+                    b.Property<int?>("RoomId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomID");
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Facilities");
                 });
@@ -92,7 +95,6 @@ namespace Hotelguru.DataContext.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("GrandTotal")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("IssuedAt")
@@ -105,11 +107,9 @@ namespace Hotelguru.DataContext.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("RoomTotal")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ServiceTotal")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
@@ -170,7 +170,6 @@ namespace Hotelguru.DataContext.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("ChargedPrice")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("OrderedAt")
@@ -220,7 +219,6 @@ namespace Hotelguru.DataContext.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("PricePerNight")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("RoomTypeId")
@@ -242,7 +240,6 @@ namespace Hotelguru.DataContext.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("BasePrice")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("BedNumber")
@@ -265,7 +262,6 @@ namespace Hotelguru.DataContext.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Type")
@@ -330,13 +326,9 @@ namespace Hotelguru.DataContext.Migrations
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Facility", b =>
                 {
-                    b.HasOne("Hotelguru.DataContext.Entities.Room", "Room")
+                    b.HasOne("Hotelguru.DataContext.Entities.Room", null)
                         .WithMany("roomFacilities")
-                        .HasForeignKey("RoomID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
+                        .HasForeignKey("RoomId");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Invoice", b =>
