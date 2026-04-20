@@ -30,10 +30,10 @@ namespace Hotelguru.Services
         {
             if (!await _context.Reservations
                 .AnyAsync(r => r.RoomId == dto.RoomId //Szoba azonosítója megegyezik a foglalási kérelemben megadott szoba azonosítójával
-                && (r.Status != "Cancelled" || r.Status != "CheckedOut") //A foglalás státusza nem "Cancelled" vagy "CheckedOut"
-                && (r.ToDate <= dto.FromDate || r.FromDate >= dto.ToDate))) //A foglalás időszaka nem fed át a foglalási kérelemben megadott időszakkal
+                && (r.Status != "Cancelled" && r.Status != "CheckedOut") //A foglalás státusza nem "Cancelled" vagy "CheckedOut"
+                && (r.ToDate >= dto.FromDate && r.FromDate <= dto.ToDate))) //A foglalás időszaka nem fed át a foglalási kérelemben megadott időszakkal
             {//Csak akkor lehet foglalni, ha nincs már foglalás az adott szobára ugyanarra az időszakra ami nem "Cancelled" vagy "CheckedOut" státuszú
-                var reservation = //_mapper.Map<DataContext.Entities.Reservation>(dto);
+                var reservation =
                 new DataContext.Entities.Reservation
                 {
                     UserId = dto.GuestId,
@@ -45,13 +45,14 @@ namespace Hotelguru.Services
                     Status = "Requested",
                     ReservationBenefits = new List<ReservationBenefit>()
                 };
-                foreach (var serviceDto in dto.ReservationBenefits)
+                foreach (var benefitDto in dto.ReservationBenefits)
                 {
-                    var reservationService = new ReservationBenefit
+                    var reservationBenefit = new ReservationBenefit
                     {
-                        ServiceId = serviceDto.ServiceId,
-                        Quantity = serviceDto.Quantity
+                        ServiceId = benefitDto.ServiceId,
+                        Quantity = benefitDto.Quantity
                     };
+                    reservation.ReservationBenefits.Add(reservationBenefit);
                 }
                 _context.Reservations.Add(reservation);
                 await _context.SaveChangesAsync();
@@ -59,7 +60,7 @@ namespace Hotelguru.Services
             }
             else
             {
-                throw new Exception("Ez a szoba már foglalt!");
+                throw new Exception("The room is already taken!");
             }
         }
         public async Task<ReservationDto> ReservationCancelAsync(ReservationCancelDto dto)
@@ -68,11 +69,11 @@ namespace Hotelguru.Services
                 .FirstOrDefaultAsync(r => r.Id == dto.ReservationId && r.UserId == dto.GuestId);
             if (reservation == null)
             {
-                throw new Exception("A foglalás nem található.");
+                throw new Exception("Reservation not found.");
             }
             if (reservation.CancellationDeadline < DateTime.Now)
             {
-                throw new Exception("A foglalás lemondási határideje lejárt.");
+                throw new Exception("Cancellation deadline reached.");
             }
             reservation.Status = "Cancelled";
             await _context.SaveChangesAsync();
