@@ -15,6 +15,11 @@ namespace Hotelguru.Services
     {
         Task<ReservationDto> ReservationCreateAsync(ReservationCreateDto dto);
         Task<ReservationDto> ReservationCancelAsync(ReservationCancelDto dto);
+        Task<List<ReservationDto>> ReservationListAsync();
+        Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID);
+        Task<ReservationDto> ReservationInfoByIDAsync(int reservationID);
+        Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID);
+        Task<bool> ReservationRequestDenyAsync(int userID, int reservationID);
     }
     public class ReservationService : IReservationService
     {
@@ -36,7 +41,7 @@ namespace Hotelguru.Services
                 var reservation =
                 new DataContext.Entities.Reservation
                 {
-                    UserId = dto.GuestId,
+                    UserId = dto.UserId,
                     RoomId = dto.RoomId,
                     FromDate = dto.FromDate,
                     ToDate = dto.ToDate,
@@ -66,7 +71,7 @@ namespace Hotelguru.Services
         public async Task<ReservationDto> ReservationCancelAsync(ReservationCancelDto dto)
         {
             var reservation = await _context.Reservations
-                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId && r.UserId == dto.GuestId);
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId && r.UserId == dto.UserId);
             if (reservation == null)
             {
                 throw new Exception("Reservation not found.");
@@ -78,6 +83,102 @@ namespace Hotelguru.Services
             reservation.Status = "Cancelled";
             await _context.SaveChangesAsync();
             return _mapper.Map<ReservationDto>(reservation);
+        }
+        public async Task<List<ReservationDto>> ReservationListAsync()
+        {
+            var reservations = _context.Reservations;
+            if (reservations == null)
+            {
+                throw new Exception("Reservations not found.");
+            }
+            else
+            {
+                return _mapper.Map<List<ReservationDto>>(reservations);
+            }
+        }
+        public async Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID)
+        {
+            var reservations = _context.Reservations.Where(r => r.UserId == userID).ToList();
+            if (reservations == null)
+            {
+                throw new Exception("Reservations not found.");
+            }
+            else
+            {
+                return _mapper.Map<List<ReservationDto>>(reservations);
+            }
+        }
+        public async Task<ReservationDto> ReservationInfoByIDAsync(int reservationID)
+        {
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == reservationID);
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            else
+            {
+                return _mapper.Map<ReservationDto>(reservation);
+            }
+        }
+        public async Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID)
+        {
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == userID);
+
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var hasPermission = user.Roles.Any(r => r.Name == "Admin" || r.Name == "Receptionist");
+            if (!hasPermission)
+            {
+                throw new Exception("Permission denied!");
+            }
+
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == reservationID);
+
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            if (reservation.Status != "Requested")
+            {
+                throw new Exception("Only reservations with 'Requested' status can be accepted.");
+            }
+            reservation.Status = "Accepted";
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> ReservationRequestDenyAsync(int userID, int reservationID)
+        {
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == userID);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+            var hasPermission = user.Roles.Any(r => r.Name == "Admin" || r.Name == "Receptionist");
+            if (!hasPermission)
+            {
+                throw new Exception("Permission denied!");
+            }
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == reservationID);
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            if (reservation.Status != "Requested")
+            {
+                throw new Exception("Only reservations with 'Requested' status can be denied.");
+            }
+            reservation.Status = "Denied";
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -38,5 +38,18 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        public async Task<ActionResult<List<RoleDto>>> List()
+        {
+            try
+            {
+                var result = await _roleService.RoleListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

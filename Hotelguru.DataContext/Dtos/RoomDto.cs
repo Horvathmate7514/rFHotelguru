@@ -9,11 +9,8 @@ namespace Hotelguru.DataContext.Dtos
     public class RoomDto
     {
         public int Id { get; set; }
-        public decimal PricePerNight { get; set; }
-
+        public decimal? PricePerNight { get; set; }
         public RoomTypeDto RoomType { get; set; }
-
-      
         public List<FacilityDto> Facilities { get; set; }
     }
 }

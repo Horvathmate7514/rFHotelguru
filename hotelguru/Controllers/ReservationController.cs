@@ -39,5 +39,70 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet]
+        public async Task<ActionResult<List<ReservationDto>>> List()
+        {
+            try
+            {
+                var result = await _reservationService.ReservationListAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("{userID}")]
+        public async Task<ActionResult<List<ReservationDto>>> ListByUserID(int userID)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationListByUserIDAsync(userID);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("{reservationID}")]
+        public async Task<ActionResult<ReservationDto>> InfoByID(int reservationID)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationInfoByIDAsync(reservationID);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("{userID}/{reservationID}")]
+        public async Task<ActionResult<bool>> RequestAccept(int userID, int reservationID)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationRequestAcceptAsync(userID, reservationID);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("{userID}/{reservationID}")]
+        public async Task<ActionResult<bool>> RequestDeny(int userID, int reservationID)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationRequestDenyAsync(userID, reservationID);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
