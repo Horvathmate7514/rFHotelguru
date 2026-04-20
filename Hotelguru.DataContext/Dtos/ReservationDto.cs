@@ -16,6 +16,7 @@ namespace Hotelguru.DataContext.Dtos
         public DateTime ToDate { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
+        public string Status { get; set; }
     }
 
     public class ReservationCreateDto

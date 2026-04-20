@@ -17,6 +17,9 @@ namespace Hotelguru.Services
         Task<ReservationDto> ReservationCancelAsync(ReservationCancelDto dto);
         Task<List<ReservationDto>> ReservationListAsync();
         Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID);
+        Task<ReservationDto> ReservationInfoByIDAsync(int reservationID);
+        Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID);
+        Task<bool> ReservationRequestDenyAsync(int userID, int reservationID);
     }
     public class ReservationService : IReservationService
     {
@@ -90,12 +93,7 @@ namespace Hotelguru.Services
             }
             else
             {
-                var temp = new List<ReservationDto>();
-                foreach (var reservation in reservations)
-                {
-                    temp.Add(_mapper.Map<ReservationDto>(reservation)); 
-                }
-                return temp;
+                return _mapper.Map<List<ReservationDto>>(reservations);
             }
         }
         public async Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID)
@@ -107,13 +105,80 @@ namespace Hotelguru.Services
             }
             else
             {
-                var temp = new List<ReservationDto>();
-                foreach (var reservation in reservations)
-                {
-                    temp.Add(_mapper.Map<ReservationDto>(reservation));
-                }
-                return temp;
+                return _mapper.Map<List<ReservationDto>>(reservations);
             }
+        }
+        public async Task<ReservationDto> ReservationInfoByIDAsync(int reservationID)
+        {
+            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == reservationID);
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            else
+            {
+                return _mapper.Map<ReservationDto>(reservation);
+            }
+        }
+        public async Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID)
+        {
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == userID);
+
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+
+            var hasPermission = user.Roles.Any(r => r.Name == "Admin" || r.Name == "Receptionist");
+            if (!hasPermission)
+            {
+                throw new Exception("Permission denied!");
+            }
+
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == reservationID);
+
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            if (reservation.Status != "Requested")
+            {
+                throw new Exception("Only reservations with 'Requested' status can be accepted.");
+            }
+            reservation.Status = "Accepted";
+            await _context.SaveChangesAsync();
+            return true;
+        }
+        public async Task<bool> ReservationRequestDenyAsync(int userID, int reservationID)
+        {
+            var user = await _context.Users
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == userID);
+            if (user == null)
+            {
+                throw new Exception("User not found.");
+            }
+            var hasPermission = user.Roles.Any(r => r.Name == "Admin" || r.Name == "Receptionist");
+            if (!hasPermission)
+            {
+                throw new Exception("Permission denied!");
+            }
+            var reservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.Id == reservationID);
+            if (reservation == null)
+            {
+                throw new Exception("Reservation not found.");
+            }
+            if (reservation.Status != "Requested")
+            {
+                throw new Exception("Only reservations with 'Requested' status can be denied.");
+            }
+            reservation.Status = "Denied";
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
