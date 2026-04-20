@@ -32,6 +32,7 @@ namespace hotelguru
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
+            builder.Services.AddScoped<IFacilityService, FacilityService>();
 
 
            

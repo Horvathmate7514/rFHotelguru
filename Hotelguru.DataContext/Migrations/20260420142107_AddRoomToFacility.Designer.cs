@@ -4,6 +4,7 @@ using Hotelguru.DataContext.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260420142107_AddRoomToFacility")]
+    partial class AddRoomToFacility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,13 +133,10 @@ namespace Hotelguru.DataContext.Migrations
                     b.Property<DateTime>("CancellationDeadline")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CheckInDate")
+                    b.Property<DateTime>("CheckInDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("CheckOutDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("FromDate")
+                    b.Property<DateTime>("CheckOutDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("RoomId")
@@ -145,9 +145,6 @@ namespace Hotelguru.DataContext.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("ToDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -161,7 +158,7 @@ namespace Hotelguru.DataContext.Migrations
                     b.ToTable("Reservations");
                 });
 
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.ReservationBenefit", b =>
+            modelBuilder.Entity("Hotelguru.DataContext.Entities.ReservationService", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -369,10 +366,10 @@ namespace Hotelguru.DataContext.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.ReservationBenefit", b =>
+            modelBuilder.Entity("Hotelguru.DataContext.Entities.ReservationService", b =>
                 {
                     b.HasOne("Hotelguru.DataContext.Entities.Reservation", "Reservation")
-                        .WithMany("ReservationBenefits")
+                        .WithMany("ReservationService")
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -430,7 +427,7 @@ namespace Hotelguru.DataContext.Migrations
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Reservation", b =>
                 {
-                    b.Navigation("ReservationBenefits");
+                    b.Navigation("ReservationService");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Room", b =>
