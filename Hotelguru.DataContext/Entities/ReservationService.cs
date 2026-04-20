@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace Hotelguru.DataContext.Entities
         public int Quantity { get; set; }
         public int ServiceId { get; set; }
         public Service? Service { get; set; }
-
+        [Precision(18, 2)]
         public decimal ChargedPrice { get; set; }
 
         public DateTime OrderedAt { get; set; }

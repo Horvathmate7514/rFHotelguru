@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,11 @@ namespace Hotelguru.DataContext.Entities
         public int Id { get; set; }
         public int ReservationId { get; set; }
         public Reservation? Reservation { get; set; }
+        [Precision(18, 2)]
         public decimal RoomTotal { get; set; }
+        [Precision(18, 2)]
         public decimal ServiceTotal { get; set; }
+        [Precision(18, 2)]
         public decimal GrandTotal { get; set; }
 
         public int IssuedBy { get; set; }
