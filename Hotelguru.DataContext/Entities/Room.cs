@@ -15,10 +15,8 @@ namespace Hotelguru.DataContext.Entities
 
         public decimal? PricePerNight { get; set; }
 
-        public List<Facility> roomFacilities { get; set; }
-
-
-
+        public ICollection<Facility> Facilities { get; set; } = new List<Facility>();
+        public int RoomTypeId { get; set; }
     }
 
    
