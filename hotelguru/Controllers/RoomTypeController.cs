@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class RoomTypeController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -16,9 +16,7 @@ namespace hotelguru.Controllers
             _context = context;
         }
 
-
-        // POST /api/RoomType/createRoomType
-        [HttpPost("createRoomType")]
+        [HttpPost]
         // A visszatérési típus a válasz DTO
         public async Task<ActionResult<RoomTypeDto>> CreateRoomType(RoomTypeCreateDto createDto)
         {
