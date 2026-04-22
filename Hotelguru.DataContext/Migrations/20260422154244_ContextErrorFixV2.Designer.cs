@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260422152720_RoomStatusAdded")]
-    partial class RoomStatusAdded
+    [Migration("20260422154244_ContextErrorFixV2")]
+    partial class ContextErrorFixV2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,10 +243,6 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.Property<int>("RoomTypeId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
