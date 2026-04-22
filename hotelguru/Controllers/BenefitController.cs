@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Hotelguru.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class BenefitController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -19,10 +19,10 @@ namespace Hotelguru.Controllers
 
         // GET: api/Services
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServicesDto>>> GetServices()
+        public async Task<ActionResult<IEnumerable<BenefitDto>>> BenefitGetAll()
         {
-            var services = await _context.Services
-                .Select(s => new ServicesDto
+            var services = await _context.Benefits
+                .Select(s => new BenefitDto
                 {
                     Id = s.Id,
                     Type = s.Type,
@@ -35,16 +35,16 @@ namespace Hotelguru.Controllers
 
         // GET: api/Services/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<ServicesDto>> GetService(int id)
+        public async Task<ActionResult<BenefitDto>> GetById(int id)
         {
-            var serviceEntity = await _context.Services.FindAsync(id);
+            var serviceEntity = await _context.Benefits.FindAsync(id);
 
             if (serviceEntity == null)
             {
                 return NotFound();
             }
 
-            var dto = new ServicesDto
+            var dto = new BenefitDto
             {
                 Id = serviceEntity.Id,
                 Type = serviceEntity.Type,
@@ -56,32 +56,32 @@ namespace Hotelguru.Controllers
 
         // POST: api/Services
         [HttpPost("createServices")]
-        public async Task<ActionResult<ServicesDto>> CreateService(ServicesCreateDto createDto)
+        public async Task<ActionResult<BenefitDto>> CreateBenefit(BenefitCreateDto createDto)
         {
-            var serviceEntity = new Service
+            var serviceEntity = new Benefit
             {
                 Type = createDto.Type,
                 Price = createDto.Price
             };
 
-            _context.Services.Add(serviceEntity);
+            _context.Benefits.Add(serviceEntity);
             await _context.SaveChangesAsync();
 
-            var responseDto = new ServicesDto
+            var responseDto = new BenefitDto
             {
                 Id = serviceEntity.Id,
                 Type = serviceEntity.Type,
                 Price = serviceEntity.Price
             };
 
-            return CreatedAtAction(nameof(GetService), new { id = serviceEntity.Id }, responseDto);
+            return CreatedAtAction(nameof(GetById), new { id = serviceEntity.Id }, responseDto);
         }
 
         // PUT: api/Services/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateService(int id, ServicesUpdateDto updateDto)
+        public async Task<IActionResult> UpdateService(int id, BenefitUpdateDto updateDto)
         {
-            var serviceEntity = await _context.Services.FindAsync(id);
+            var serviceEntity = await _context.Benefits.FindAsync(id);
 
             if (serviceEntity == null)
             {
@@ -98,16 +98,16 @@ namespace Hotelguru.Controllers
 
         // DELETE: api/Services/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteService(int id)
+        public async Task<IActionResult> DeleteBenefit(int id)
         {
-            var serviceEntity = await _context.Services.FindAsync(id);
+            var serviceEntity = await _context.Benefits.FindAsync(id);
 
             if (serviceEntity == null)
             {
                 return NotFound();
             }
 
-            _context.Services.Remove(serviceEntity);
+            _context.Benefits.Remove(serviceEntity);
             await _context.SaveChangesAsync();
 
             return NoContent();

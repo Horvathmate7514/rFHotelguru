@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Hotelguru.DataContext.Dtos
 {
-    public class ServicesDto
+    public class BenefitDto
     {
         public int Id { get; set; }
         public string Type { get; set; }
         public decimal Price { get; set; }
     }
 
-    public class ServicesCreateDto
+    public class BenefitCreateDto
     {
         [Required]
         public string Type { get; set; }
@@ -22,7 +22,7 @@ namespace Hotelguru.DataContext.Dtos
         public decimal Price { get; set; }
     }
 
-    public class ServicesUpdateDto
+    public class BenefitUpdateDto
     {
         [Required]
         public string Type { get; set; }
