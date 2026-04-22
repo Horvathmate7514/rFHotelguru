@@ -36,6 +36,7 @@ namespace Hotelguru.Services
 
             CreateMap<FacilityCreateDto, Facility>();
             CreateMap<FacilityUpdateDto, Facility>();
+            CreateMap<Invoice, InvoiceDto>();
 
         }
     }

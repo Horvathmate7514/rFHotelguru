@@ -3,8 +3,8 @@ using Hotelguru.Services;
 using Hotelguru.DataContext.Dtos;
 namespace hotelguru.Controllers
 {
-        [ApiController] 
-        [Route("api/[controller]")]
+    [ApiController]
+    [Route("api/[controller]/[action]")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -17,24 +17,24 @@ namespace hotelguru.Controllers
         }
 
 
-        [HttpPost("register")]
+        [HttpPost]
         public async Task<ActionResult<UserDto>> Register(UserRegisterDto dto)
         {
             try
             {
                 var result = await _userService.RegisterAsync(dto);
-               
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-               
+
                 return BadRequest(ex.Message);
             }
         }
 
-        
-        [HttpPost("login")]
+
+        [HttpPost]
         public async Task<ActionResult<UserDto>> Login(UserLoginDto dto)
         {
 
@@ -42,7 +42,7 @@ namespace hotelguru.Controllers
 
             if (user == null)
             {
-               
+
                 return Unauthorized("Hibás email cím vagy jelszó!");
             }
 
@@ -74,6 +74,20 @@ namespace hotelguru.Controllers
             catch (KeyNotFoundException)
             {
                 return NotFound("A módosítani kívánt felhasználó nem létezik.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<UserDto>>> GetAll()
+        {
+            try
+            {
+                var result = await _userService.UserGetAllAsync();
+                return Ok(result);
             }
             catch (Exception ex)
             {

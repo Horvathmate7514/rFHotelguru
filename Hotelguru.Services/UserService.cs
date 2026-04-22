@@ -16,6 +16,7 @@ namespace Hotelguru.Services
         Task<UserDto?> LoginAsync(UserLoginDto dto);
         Task<UserDto?> GetUserByIdAsync(int id);
         Task<UserDto> UpdateUserAsync(int id, UserUpdateDto dto);
+        Task<List<UserDto>> UserGetAllAsync();
     }
     public class UserService : IUserService
     {
@@ -46,7 +47,7 @@ namespace Hotelguru.Services
         public async Task<UserDto?> LoginAsync(UserLoginDto dto)
         {
             var user = await _context.Users
-                .Include(u => u.Address) 
+                .Include(u => u.Address)
                 .Include(u => u.Roles)
                 .FirstOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
 
@@ -66,7 +67,7 @@ namespace Hotelguru.Services
 
         public async Task<UserDto> UpdateUserAsync(int id, UserUpdateDto dto)
         {
-            
+
             var user = await _context.Users
                 .Include(u => u.Address)
                 .Include(u => u.Roles)
@@ -77,17 +78,24 @@ namespace Hotelguru.Services
                 throw new KeyNotFoundException("A felhasználó nem található.");
             }
 
-            
+
             _mapper.Map(dto, user);
 
-            
+
             await _context.SaveChangesAsync();
 
-            
+
             return _mapper.Map<UserDto>(user);
         }
 
+        public async Task<List<UserDto>> UserGetAllAsync()
+        {
+            var users = await _context.Users
+                .Include(u => u.Address)
+                .Include(u => u.Roles)
+                .ToListAsync();
+            return _mapper.Map<List<UserDto>>(users);
 
-
+        }
     }
 }
