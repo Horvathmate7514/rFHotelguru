@@ -17,10 +17,11 @@ namespace Hotelguru.DataContext.Context
         }
 
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<RoomFacility> RoomFacilities { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Service> Services { get; set; }
-        public DbSet<ReservationBenefit> ReservationServices { get; set; }
+        public DbSet<ReservationBenefit> ReservationBenefits { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Facility> Facilities { get; set; }

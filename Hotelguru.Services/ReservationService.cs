@@ -15,7 +15,7 @@ namespace Hotelguru.Services
     {
         Task<ReservationDto> ReservationCreateAsync(ReservationCreateDto dto);
         Task<ReservationDto> ReservationCancelAsync(ReservationCancelDto dto);
-        Task<List<ReservationDto>> ReservationListAsync();
+        Task<List<ReservationDto>> ReservationGetAllAsync();
         Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID);
         Task<ReservationDto> ReservationInfoByIDAsync(int reservationID);
         Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID);
@@ -87,7 +87,7 @@ namespace Hotelguru.Services
             await _context.SaveChangesAsync();
             return _mapper.Map<ReservationDto>(reservation);
         }
-        public async Task<List<ReservationDto>> ReservationListAsync()
+        public async Task<List<ReservationDto>> ReservationGetAllAsync()
         {
             var reservations = await _context.Reservations.ToListAsync();
 

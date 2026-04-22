@@ -8,11 +8,11 @@ namespace Hotelguru.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ServicesController : ControllerBase
+    public class BenefitController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public ServicesController(AppDbContext context)
+        public BenefitController(AppDbContext context)
         {
             _context = context;
         }

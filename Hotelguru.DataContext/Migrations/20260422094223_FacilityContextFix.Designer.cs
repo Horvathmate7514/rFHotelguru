@@ -4,6 +4,7 @@ using Hotelguru.DataContext.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260422094223_FacilityContextFix")]
+    partial class FacilityContextFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,7 +76,12 @@ namespace Hotelguru.DataContext.Migrations
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
+                    b.Property<int?>("RoomId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
 
                     b.ToTable("Facilities");
                 });
@@ -186,7 +194,7 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ReservationBenefits");
+                    b.ToTable("ReservationServices");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Role", b =>
@@ -225,29 +233,6 @@ namespace Hotelguru.DataContext.Migrations
                     b.HasIndex("RoomTypeId");
 
                     b.ToTable("Rooms");
-                });
-
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.RoomFacility", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FacilityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RoomId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FacilityId");
-
-                    b.HasIndex("RoomId");
-
-                    b.ToTable("RoomFacilities");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.RoomType", b =>
@@ -345,6 +330,13 @@ namespace Hotelguru.DataContext.Migrations
                     b.ToTable("RoleUser");
                 });
 
+            modelBuilder.Entity("Hotelguru.DataContext.Entities.Facility", b =>
+                {
+                    b.HasOne("Hotelguru.DataContext.Entities.Room", null)
+                        .WithMany("Facilities")
+                        .HasForeignKey("RoomId");
+                });
+
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Invoice", b =>
                 {
                     b.HasOne("Hotelguru.DataContext.Entities.Reservation", "Reservation")
@@ -405,25 +397,6 @@ namespace Hotelguru.DataContext.Migrations
                     b.Navigation("RoomType");
                 });
 
-            modelBuilder.Entity("Hotelguru.DataContext.Entities.RoomFacility", b =>
-                {
-                    b.HasOne("Hotelguru.DataContext.Entities.Facility", "Facility")
-                        .WithMany()
-                        .HasForeignKey("FacilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hotelguru.DataContext.Entities.Room", "Room")
-                        .WithMany("RoomFacilities")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Facility");
-
-                    b.Navigation("Room");
-                });
-
             modelBuilder.Entity("Hotelguru.DataContext.Entities.User", b =>
                 {
                     b.HasOne("Hotelguru.DataContext.Entities.Address", "Address")
@@ -460,7 +433,7 @@ namespace Hotelguru.DataContext.Migrations
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Room", b =>
                 {
-                    b.Navigation("RoomFacilities");
+                    b.Navigation("Facilities");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.User", b =>
