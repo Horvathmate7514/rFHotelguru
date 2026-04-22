@@ -22,6 +22,7 @@ namespace Hotelguru.Services
         Task<bool> ReservationRequestDenyAsync(int userID, int reservationID);
         Task<ReservationDto> ReservationCheckInAsync(ReservationCheckInDto dto);
         Task<ReservationDto> ReservationCheckOutAsync(ReservationCheckOutDto dto);
+        Task<bool> ReservationAddBenefitAsync(ReservationBenefitCreateDto dto);
         Task<InvoiceDto> GenerateInvoiceAsync(int reservationId, int employeeId);
     }
     public class ReservationService : IReservationService
@@ -89,7 +90,10 @@ namespace Hotelguru.Services
         }
         public async Task<List<ReservationDto>> ReservationGetAllAsync()
         {
-            var reservations = await _context.Reservations.ToListAsync();
+            var reservations = await _context.Reservations
+                .Include(r => r.ReservationBenefits)
+                    .ThenInclude(rb => rb.Benefit) // <-- Add this line
+                .ToListAsync();
 
             if (reservations == null || !reservations.Any())
             {
@@ -101,7 +105,7 @@ namespace Hotelguru.Services
 
         public async Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID)
         {
-            var reservations = _context.Reservations.Where(r => r.UserId == userID).ToListAsync();
+            var reservations = _context.Reservations.Include(r => r.ReservationBenefits).Where(r => r.UserId == userID).ToListAsync();
             if (reservations == null)
             {
                 throw new Exception("Reservations not found.");
@@ -215,7 +219,23 @@ namespace Hotelguru.Services
             await _context.SaveChangesAsync();
             return _mapper.Map<ReservationDto>(reservation);
         }
-
+        public async Task<bool> ReservationAddBenefitAsync(ReservationBenefitCreateDto dto)
+        {
+            var reservation = await _context.Reservations
+                .Include(r => r.ReservationBenefits)
+                .FirstOrDefaultAsync(r => r.Id == dto.ReservationId);
+            if (reservation == null) throw new Exception("Reservation not found.");
+            var reservationBenefit = new ReservationBenefit
+            {
+                ReservationId = dto.ReservationId,
+                BenefitId = dto.BenefitId,
+                Quantity = dto.Quantity,
+                OrderedAt = DateTime.Now
+            };
+            reservation.ReservationBenefits.Add(reservationBenefit);
+            await _context.SaveChangesAsync();
+            return true;
+        }
         public async Task<InvoiceDto> GenerateInvoiceAsync(int reservationId, int employeeId)
         {
             // 1. Foglalás betöltése az összes szükséges kapcsolódó adattal

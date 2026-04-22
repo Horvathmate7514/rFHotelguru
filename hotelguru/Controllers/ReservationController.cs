@@ -132,8 +132,20 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpPost("{reservationId}/generate-invoice")]
+        [HttpPut]
+        public async Task<ActionResult<ReservationDto>> AddService(ReservationBenefitCreateDto dto)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationAddBenefitAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("{reservationId}")]
         public async Task<ActionResult<InvoiceDto>> GenerateInvoice(int reservationId, [FromBody] int issuedBy)
         {
             try

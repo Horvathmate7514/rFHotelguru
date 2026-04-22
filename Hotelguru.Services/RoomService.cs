@@ -38,7 +38,7 @@ namespace Hotelguru.Services
                 {
                     RoomTypeId = dto.RoomTypeId,
                     PricePerNight = null, //Ár megadása opcionális, alapértelmezetten null értékű
-                    //Status = "Available", //Új szoba mindig "Available" státuszú lesz
+                    Status = "Available", //Új szoba mindig "Available" státuszú lesz
                     RoomFacilities = new List<RoomFacility>() //Kezdetben üres lista a szoba szolgáltatásaihoz
                 };
             _context.Rooms.Add(room);
@@ -60,7 +60,7 @@ namespace Hotelguru.Services
         public async Task<List<RoomDto>> RoomGetAllAsync()
         {
             var rooms = await _context.Rooms
-                .Include(r => r.RoomFacilities) // Eagerly load RoomFacilities
+                .Include(r => r.RoomFacilities)
                 .ToListAsync();
             return _mapper.Map<List<RoomDto>>(rooms);
         }
@@ -75,7 +75,7 @@ namespace Hotelguru.Services
             {
                 room.PricePerNight = dto.PricePerNight;
                 room.RoomTypeId = dto.RoomTypeId;
-                //room.Status = dto.Status;
+                room.Status = dto.Status;
                 await _context.SaveChangesAsync();
                 return _mapper.Map<RoomDto>(room);
             }
