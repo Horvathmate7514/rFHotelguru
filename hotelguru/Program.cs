@@ -35,7 +35,7 @@ namespace hotelguru
             builder.Services.AddScoped<IFacilityService, FacilityService>();
             builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
             builder.Services.AddScoped<IRoomService, RoomService>();
-            //builder.Services.AddScoped<IBenefitService, BenefitService>();
+            builder.Services.AddScoped<IBenefitService, BenefitService>();
 
 
 

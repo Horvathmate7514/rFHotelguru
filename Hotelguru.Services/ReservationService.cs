@@ -222,7 +222,7 @@ namespace Hotelguru.Services
             var reservation = await _context.Reservations
                 .Include(r => r.Room)
                 .Include(r => r.ReservationBenefits)
-                    .ThenInclude(rb => rb.Service)
+                    .ThenInclude(rb => rb.Benefit)
                 .FirstOrDefaultAsync(r => r.Id == reservationId);
 
             if (reservation == null) throw new Exception("Foglalás nem található.");
@@ -237,7 +237,7 @@ namespace Hotelguru.Services
             // 3. Szolgáltatások (Benefits) árának kiszámítása
             // Itt a Quantity-t és a Service.Price-t szorozzuk össze
             decimal serviceTotal = reservation.ReservationBenefits
-                .Sum(rb => rb.Quantity * rb.Service.Price);
+                .Sum(rb => rb.Quantity * rb.Benefit.Price);
 
             // 4. Az új Invoice objektum összeállítása a te entitásod alapján
             var invoice = new Invoice

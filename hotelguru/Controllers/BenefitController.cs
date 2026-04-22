@@ -1,6 +1,7 @@
 ﻿using Hotelguru.DataContext.Context;
 using Hotelguru.DataContext.Dtos;
 using Hotelguru.DataContext.Entities;
+using Hotelguru.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,107 +11,85 @@ namespace Hotelguru.Controllers
     [Route("api/[controller]/[action]")]
     public class BenefitController : ControllerBase
     {
-        private readonly AppDbContext _context;
+       private readonly IBenefitService _benefitService;
 
-        public BenefitController(AppDbContext context)
+        public BenefitController(IBenefitService benefitService)
         {
-            _context = context;
+            _benefitService = benefitService;
         }
 
-        // GET: api/Services
+
+        [HttpPost]
+        public async Task<ActionResult<BenefitDto>> Create(BenefitCreateDto dto)
+        {
+            try
+            {
+                var result = await _benefitService.BenefitCreateAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BenefitDto>>> BenefitGetAll()
+        public async Task<ActionResult<List<BenefitDto>>> GetAll()
         {
-            var services = await _context.Benefits
-                .Select(s => new BenefitDto
-                {
-                    Id = s.Id,
-                    Type = s.Type,
-                    Price = s.Price
-                })
-                .ToListAsync();
-
-            return Ok(services);
+            try
+            {
+                var result = await _benefitService.BenefitGetAllAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // GET: api/Services/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<BenefitDto>> GetById(int id)
         {
-            var serviceEntity = await _context.Benefits.FindAsync(id);
-
-            if (serviceEntity == null)
+            try
             {
-                return NotFound();
+                var result = await _benefitService.BenefitGetByIdAsync(id);
+                if (result == null) return NotFound();
+                return Ok(result);
             }
-
-            var dto = new BenefitDto
+            catch (Exception ex)
             {
-                Id = serviceEntity.Id,
-                Type = serviceEntity.Type,
-                Price = serviceEntity.Price
-            };
-
-            return Ok(dto);
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/Services
-        [HttpPost("createServices")]
-        public async Task<ActionResult<BenefitDto>> CreateBenefit(BenefitCreateDto createDto)
-        {
-            var serviceEntity = new Benefit
-            {
-                Type = createDto.Type,
-                Price = createDto.Price
-            };
-
-            _context.Benefits.Add(serviceEntity);
-            await _context.SaveChangesAsync();
-
-            var responseDto = new BenefitDto
-            {
-                Id = serviceEntity.Id,
-                Type = serviceEntity.Type,
-                Price = serviceEntity.Price
-            };
-
-            return CreatedAtAction(nameof(GetById), new { id = serviceEntity.Id }, responseDto);
-        }
-
-        // PUT: api/Services/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateService(int id, BenefitUpdateDto updateDto)
+        public async Task<ActionResult<BenefitDto>> Update(int id, BenefitUpdateDto dto)
         {
-            var serviceEntity = await _context.Benefits.FindAsync(id);
-
-            if (serviceEntity == null)
+            try
             {
-                return NotFound();
+                var result = await _benefitService.BenefitUpdateAsync(id, dto);
+                if (result == null) return NotFound();
+                return Ok(result);
             }
-
-            serviceEntity.Type = updateDto.Type;
-            serviceEntity.Price = updateDto.Price;
-
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/Services/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBenefit(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            var serviceEntity = await _context.Benefits.FindAsync(id);
-
-            if (serviceEntity == null)
+            try
             {
-                return NotFound();
+                var success = await _benefitService.BenefitDeleteAsync(id);
+                if (!success) return NotFound();
+                return NoContent();
             }
-
-            _context.Benefits.Remove(serviceEntity);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
