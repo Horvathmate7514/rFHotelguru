@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Hotelguru.DataContext.Dtos
 {
+    // In Hotelguru.DataContext/Dtos/ReservationDto.cs
+
     public class ReservationDto
     {
         public int Id { get; set; }
@@ -17,7 +19,7 @@ namespace Hotelguru.DataContext.Dtos
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
         public string Status { get; set; }
-        public List<ReservationBenefitCreateDto> ReservationBenefits { get; set; }
+        public List<ReservationBenefitDto> ReservationBenefits { get; set; }
     }
 
     public class ReservationCreateDto
@@ -26,11 +28,18 @@ namespace Hotelguru.DataContext.Dtos
         public int UserId { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public List<ReservationBenefitCreateDto> ReservationBenefits { get; set; }
+        public List<ReservationBenefitDto> ReservationBenefits { get; set; }
+    }
+    public class ReservationBenefitDto
+    {
+        public int ReservationId { get; set; }
+        public int BenefitId { get; set; }
+        public int Quantity { get; set; }
     }
 
     public class ReservationBenefitCreateDto
     {
+        public int ReservationId { get; set; }
         public int BenefitId { get; set; }
         public int Quantity { get; set; }
     }

@@ -24,6 +24,7 @@ namespace Hotelguru.Services
             CreateMap<Reservation, ReservationDto>().ReverseMap();
             CreateMap<ReservationCreateDto, Reservation>();
             CreateMap<ReservationCancelDto, Reservation>();
+            CreateMap<ReservationBenefit, ReservationBenefitDto>();
 
             CreateMap<Role, RoleDto>().ReverseMap();
             CreateMap<RoleCreateDto, Role>();
@@ -33,7 +34,7 @@ namespace Hotelguru.Services
             CreateMap<RoomType, RoomTypeDto>();
             CreateMap<RoomCreateDto, Room>();
 
-            CreateMap<Facility, FacilityDto>();
+            CreateMap<Facility, FacilityDto>().ReverseMap();
             CreateMap<RoomFacility, RoomFacilityDto>();
 
             CreateMap<FacilityCreateDto, Facility>();
