@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Hotelguru.DataContext.Entities
 {
-    public class Service
+    public class Benefit
     {
         public int Id { get; set; }
 

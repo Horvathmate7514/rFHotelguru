@@ -57,7 +57,7 @@ namespace Hotelguru.Services
                 {
                     var reservationBenefit = new ReservationBenefit
                     {
-                        ServiceId = benefitDto.ServiceId,
+                        BenefitId = benefitDto.BenefitId,
                         Quantity = benefitDto.Quantity
                     };
                     reservation.ReservationBenefits.Add(reservationBenefit);

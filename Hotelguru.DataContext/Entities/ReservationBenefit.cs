@@ -14,8 +14,8 @@ namespace Hotelguru.DataContext.Entities
         public Reservation? Reservation { get; set; }
 
         public int Quantity { get; set; }
-        public int ServiceId { get; set; }
-        public Service? Service { get; set; }
+        public int BenefitId { get; set; }
+        public Benefit? Benefit { get; set; }
         [Precision(18, 2)]
         public decimal ChargedPrice { get; set; }
 
