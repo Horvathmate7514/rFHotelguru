@@ -19,6 +19,7 @@ namespace Hotelguru.Services
         Task<RoomDto> RoomUpdateAsync(int id, RoomUpdateDto dto);
         Task<bool> RoomDeleteAsync(int id);
         Task<bool> RoomAddFacilityAsync(RoomFacilityCreateDto dto);
+        Task<List<RoomDto>> RoomGetAvailableInDateRangeAsync(DateTime startDate, DateTime endDate);
     }
     public class RoomService : IRoomService
     {
@@ -121,6 +122,19 @@ namespace Hotelguru.Services
             room.RoomFacilities.Add(roomFacility);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<List<RoomDto>> RoomGetAvailableInDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            var availableRooms = await _context.Rooms
+                .Where(r => !_context.Reservations
+                    .Any(res => res.RoomId == r.Id //Szoba azonosítója megegyezik a foglalási kérelemben megadott szoba azonosítójával
+                        && (res.Status != "Cancelled" && res.Status != "CheckedOut" && res.Status != "Denied") //A foglalás státusza nem "Cancelled" vagy "CheckedOut"
+                        && res.FromDate <= endDate   //A foglalás időszaka nem fed át 
+                        && res.ToDate >= startDate) //      a foglalási kérelemben megadott időszakkal    
+                )
+                .Include(r => r.RoomFacilities)
+                .ToListAsync();
+            return _mapper.Map<List<RoomDto>>(availableRooms);
         }
     }
 }
