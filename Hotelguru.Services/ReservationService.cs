@@ -20,6 +20,9 @@ namespace Hotelguru.Services
         Task<ReservationDto> ReservationInfoByIDAsync(int reservationID);
         Task<bool> ReservationRequestAcceptAsync(int userID, int reservationID);
         Task<bool> ReservationRequestDenyAsync(int userID, int reservationID);
+        Task<ReservationDto> ReservationCheckInAsync(ReservationCheckInDto dto);
+        Task<ReservationDto> ReservationCheckOutAsync(ReservationCheckOutDto dto);
+        Task<InvoiceDto> GenerateInvoiceAsync(int reservationId, int employeeId);
     }
     public class ReservationService : IReservationService
     {
@@ -86,19 +89,19 @@ namespace Hotelguru.Services
         }
         public async Task<List<ReservationDto>> ReservationListAsync()
         {
-            var reservations = _context.Reservations;
-            if (reservations == null)
+            var reservations = await _context.Reservations.ToListAsync();
+
+            if (reservations == null || !reservations.Any())
             {
                 throw new Exception("Reservations not found.");
             }
-            else
-            {
-                return _mapper.Map<List<ReservationDto>>(reservations);
-            }
+
+            return _mapper.Map<List<ReservationDto>>(reservations);
         }
+
         public async Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID)
         {
-            var reservations = _context.Reservations.Where(r => r.UserId == userID).ToList();
+            var reservations = _context.Reservations.Where(r => r.UserId == userID).ToListAsync();
             if (reservations == null)
             {
                 throw new Exception("Reservations not found.");
@@ -179,6 +182,79 @@ namespace Hotelguru.Services
             reservation.Status = "Denied";
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<ReservationDto> ReservationCheckInAsync(ReservationCheckInDto dto)
+        {
+            var reservation = await _context.Reservations.FindAsync(dto.ReservationId);
+
+            if (reservation == null) throw new Exception("Reservation not found.");
+
+            if (reservation.Status != "Accepted")
+                throw new Exception("Only accepted reservations can check-in.");
+
+            reservation.Status = "CheckedIn";
+            reservation.CheckInDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return _mapper.Map<ReservationDto>(reservation);
+        }
+
+        public async Task<ReservationDto> ReservationCheckOutAsync(ReservationCheckOutDto dto)
+        {
+            var reservation = await _context.Reservations.FindAsync(dto.ReservationId);
+
+            if (reservation == null) throw new Exception("Reservation not found.");
+
+            if (reservation.Status != "CheckedIn")
+                throw new Exception("Guest must be checked-in before checking-out.");
+
+            reservation.Status = "CheckedOut";
+            reservation.CheckOutDate = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return _mapper.Map<ReservationDto>(reservation);
+        }
+
+        public async Task<InvoiceDto> GenerateInvoiceAsync(int reservationId, int employeeId)
+        {
+            // 1. Foglalás betöltése az összes szükséges kapcsolódó adattal
+            var reservation = await _context.Reservations
+                .Include(r => r.Room)
+                .Include(r => r.ReservationBenefits)
+                    .ThenInclude(rb => rb.Service)
+                .FirstOrDefaultAsync(r => r.Id == reservationId);
+
+            if (reservation == null) throw new Exception("Foglalás nem található.");
+
+            // 2. Szoba árának kiszámítása (FromDate és ToDate közötti éjszakák)
+            // Megjegyzés: A .Days kiszámolja a különbséget
+            var nights = (reservation.ToDate - reservation.FromDate).Days;
+            if (nights <= 0) nights = 1; // Ha aznap távozik, akkor is 1 éjszaka
+
+            decimal roomTotal = (decimal)(nights * reservation.Room.PricePerNight);
+
+            // 3. Szolgáltatások (Benefits) árának kiszámítása
+            // Itt a Quantity-t és a Service.Price-t szorozzuk össze
+            decimal serviceTotal = reservation.ReservationBenefits
+                .Sum(rb => rb.Quantity * rb.Service.Price);
+
+            // 4. Az új Invoice objektum összeállítása a te entitásod alapján
+            var invoice = new Invoice
+            {
+                ReservationId = reservationId,
+                RoomTotal = roomTotal,
+                ServiceTotal = serviceTotal,
+                GrandTotal = roomTotal + serviceTotal,
+                IssuedBy = employeeId, // Az alkalmazott ID-ja, aki generálja
+                IssuedAt = DateTime.Now
+            };
+
+            _context.Invoices.Add(invoice);
+            await _context.SaveChangesAsync();
+
+            // 5. Visszaadjuk a mappelt DTO-t
+            return _mapper.Map<InvoiceDto>(invoice);
         }
     }
 }

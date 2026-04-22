@@ -39,4 +39,14 @@ namespace Hotelguru.DataContext.Dtos
         public int ReservationId { get; set; }
         public int UserId { get; set; }
     }
+
+    public class ReservationCheckInDto
+    {
+        public int ReservationId { get; set; }
+    }
+
+    public class ReservationCheckOutDto
+    {
+        public int ReservationId { get; set; }
+    }
 }

@@ -104,5 +104,47 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPut("check-in")]
+        public async Task<ActionResult<ReservationDto>> CheckIn(ReservationCheckInDto dto)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationCheckInAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("check-out")]
+        public async Task<ActionResult<ReservationDto>> CheckOut(ReservationCheckOutDto dto)
+        {
+            try
+            {
+                var result = await _reservationService.ReservationCheckOutAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("{reservationId}/generate-invoice")]
+        public async Task<ActionResult<InvoiceDto>> GenerateInvoice(int reservationId, [FromBody] int issuedBy)
+        {
+            try
+            {
+                var invoice = await _reservationService.GenerateInvoiceAsync(reservationId, issuedBy);
+                return Ok(invoice);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
