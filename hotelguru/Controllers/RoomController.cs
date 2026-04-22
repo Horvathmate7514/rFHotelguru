@@ -4,7 +4,7 @@ using Hotelguru.DataContext.Dtos;
 namespace hotelguru.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class RoomController : ControllerBase
     {
         public readonly IRoomService _roomService;

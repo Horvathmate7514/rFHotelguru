@@ -11,12 +11,14 @@ namespace Hotelguru.DataContext.Entities
     {
         public int  Id { get; set; }
 
+        public int RoomTypeId { get; set; }
         public RoomType RoomType { get; set; }
+
+        public string Status { get; set; }
 
         public decimal? PricePerNight { get; set; }
 
         public List<RoomFacility> RoomFacilities { get; set; }
-        public int RoomTypeId { get; set; }
     }
 
    
