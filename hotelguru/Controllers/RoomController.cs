@@ -106,5 +106,18 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("{startDate}/{endDate}")]
+        public async Task<ActionResult<List<RoomDto>>> GetAvailableInDateRange(DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var result = await _roomService.RoomGetAvailableInDateRangeAsync(startDate, endDate);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

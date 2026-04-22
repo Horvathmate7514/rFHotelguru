@@ -38,7 +38,7 @@ namespace Hotelguru.Services
         {
             if (!await _context.Reservations
                 .AnyAsync(r => r.RoomId == dto.RoomId //Szoba azonosítója megegyezik a foglalási kérelemben megadott szoba azonosítójával
-                && (r.Status != "Cancelled" && r.Status != "CheckedOut") //A foglalás státusza nem "Cancelled" vagy "CheckedOut"
+                && (r.Status != "Cancelled" && r.Status != "CheckedOut" && r.Status != "Denied") //A foglalás státusza nem "Cancelled" vagy "CheckedOut"
                 && (r.ToDate >= dto.FromDate && r.FromDate <= dto.ToDate))) //A foglalás időszaka nem fed át a foglalási kérelemben megadott időszakkal
             {//Csak akkor lehet foglalni, ha nincs már foglalás az adott szobára ugyanarra az időszakra ami nem "Cancelled" vagy "CheckedOut" státuszú
                 var reservation =
@@ -222,7 +222,7 @@ namespace Hotelguru.Services
             var reservation = await _context.Reservations
                 .Include(r => r.Room)
                 .Include(r => r.ReservationBenefits)
-                    .ThenInclude(rb => rb.Service)
+                    .ThenInclude(rb => rb.Benefit)
                 .FirstOrDefaultAsync(r => r.Id == reservationId);
 
             if (reservation == null) throw new Exception("Foglalás nem található.");
@@ -237,7 +237,7 @@ namespace Hotelguru.Services
             // 3. Szolgáltatások (Benefits) árának kiszámítása
             // Itt a Quantity-t és a Service.Price-t szorozzuk össze
             decimal serviceTotal = reservation.ReservationBenefits
-                .Sum(rb => rb.Quantity * rb.Service.Price);
+                .Sum(rb => rb.Quantity * rb.Benefit.Price);
 
             // 4. Az új Invoice objektum összeállítása a te entitásod alapján
             var invoice = new Invoice
