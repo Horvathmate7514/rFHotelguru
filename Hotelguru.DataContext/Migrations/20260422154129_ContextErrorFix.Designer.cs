@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260422150340_BenefitRenamesV3")]
-    partial class BenefitRenamesV3
+    [Migration("20260422154129_ContextErrorFix")]
+    partial class ContextErrorFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -79,7 +79,7 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Benefits");
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Facility", b =>
