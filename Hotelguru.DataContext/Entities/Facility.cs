@@ -11,8 +11,5 @@ namespace Hotelguru.DataContext.Entities
         public int Id { get; set; }
         public string FacilityName { get; set; }
         public int Price { get; set; }
-        public int RoomID { get; set; }
-        public Room Room { get; set; }
-
     }
 }

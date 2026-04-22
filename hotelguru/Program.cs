@@ -33,8 +33,8 @@ namespace hotelguru
             builder.Services.AddScoped<IReservationService, ReservationService>();
             builder.Services.AddScoped<IRoleService, RoleService>();
             builder.Services.AddScoped<IFacilityService, FacilityService>();
-            //builder.Services.AddScoped<IRoomService, RoomService>();
             builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+            builder.Services.AddScoped<IRoomService, RoomService>();
             //builder.Services.AddScoped<IBenefitService, BenefitService>();
 
 

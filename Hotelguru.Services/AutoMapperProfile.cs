@@ -31,8 +31,10 @@ namespace Hotelguru.Services
 
             CreateMap<Room, RoomDto>();
             CreateMap<RoomType, RoomTypeDto>();
+            CreateMap<RoomCreateDto, Room>();
 
             CreateMap<Facility, FacilityDto>();
+            CreateMap<RoomFacility, RoomFacilityDto>();
 
             CreateMap<FacilityCreateDto, Facility>();
             CreateMap<FacilityUpdateDto, Facility>();

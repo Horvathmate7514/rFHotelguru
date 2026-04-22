@@ -4,6 +4,7 @@ using Hotelguru.DataContext.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Hotelguru.DataContext.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260422104845_RoomFacilityAdded")]
+    partial class RoomFacilityAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,7 +189,7 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ReservationBenefits");
+                    b.ToTable("ReservationServices");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.Role", b =>
@@ -247,7 +250,7 @@ namespace Hotelguru.DataContext.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("RoomFacilities");
+                    b.ToTable("RoomFacility");
                 });
 
             modelBuilder.Entity("Hotelguru.DataContext.Entities.RoomType", b =>

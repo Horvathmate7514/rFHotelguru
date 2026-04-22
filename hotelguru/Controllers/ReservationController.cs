@@ -40,11 +40,11 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
-        public async Task<ActionResult<List<ReservationDto>>> List()
+        public async Task<ActionResult<List<ReservationDto>>> GetAll()
         {
             try
             {
-                var result = await _reservationService.ReservationListAsync();
+                var result = await _reservationService.ReservationGetAllAsync();
                 return Ok(result);
             }
             catch (Exception ex)

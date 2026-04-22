@@ -7,7 +7,6 @@ namespace Hotelguru.DataContext.Dtos
         public int Id { get; set; }
         public string FacilityName { get; set; }
         public int Price { get; set; }
-        public int RoomId { get; set; }
     }
 
     public class FacilityCreateDto
@@ -16,8 +15,6 @@ namespace Hotelguru.DataContext.Dtos
         public string FacilityName { get; set; }
         [Required]
         public int Price { get; set; }
-        [Required]
-        public int RoomId { get; set; }
     }
 
     public class FacilityUpdateDto
@@ -26,7 +23,5 @@ namespace Hotelguru.DataContext.Dtos
         public string FacilityName { get; set; }
         [Required]
         public int Price { get; set; }
-        [Required]
-        public int RoomId { get; set; }
     }
 }

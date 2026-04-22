@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace hotelguru.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class FacilityController : ControllerBase
     {
         private readonly IFacilityService _facilityService;
@@ -17,51 +17,53 @@ namespace hotelguru.Controllers
         {
             _facilityService = facilityService;
         }
-
         [HttpPost]
         public async Task<ActionResult<FacilityDto>> Create(FacilityCreateDto dto)
         {
             try
             {
-                var result = await _facilityService.CreateFacilityAsync(dto);
+                var result = await _facilityService.FacilityCreateAsync(dto);
                 return Ok(result);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                // Ha a Service nem találja a szobát, 404-es hibát adunk
-                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<FacilityDto>> GetFacility(int id)
+        [HttpGet]
+        public async Task<ActionResult<List<FacilityDto>>> GetAll()
         {
-            var facility = await _facilityService.GetFacilityByIdAsync(id);
-
-            if (facility == null)
+            try
             {
-                return NotFound("Nincs ilyen szolgáltatás!");
+                var result = await _facilityService.FacilityGetAllAsync();
+                return Ok(result);
             }
-
-            return Ok(facility);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
+        [HttpGet("{id}")]
+        public async Task<ActionResult<FacilityDto>> GetById(int id)
+        {
+            try
+            {
+                var result = await _facilityService.FacilityGetByIdAsync(id);
+                if (result == null) return NotFound();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPut("{id}")]
         public async Task<ActionResult<FacilityDto>> Update(int id, FacilityUpdateDto dto)
         {
             try
             {
-                var result = await _facilityService.UpdateFacilityAsync(id, dto);
-
-                if (result == null)
-                {
-                    return NotFound("A módosítani kívánt szolgáltatás nem létezik.");
-                }
-
+                var result = await _facilityService.FacilityUpdateAsync(id, dto);
+                if (result == null) return NotFound();
                 return Ok(result);
             }
             catch (Exception ex)
@@ -69,20 +71,14 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var success = await _facilityService.DeleteFacilityAsync(id);
-
-                if (!success)
-                {
-                    return NotFound("A törölni kívánt szolgáltatás nem létezik.");
-                }
-
-                return Ok("Sikeres törlés!");
+                var success = await _facilityService.FacilityDeleteAsync(id);
+                if (!success) return NotFound();
+                return NoContent();
             }
             catch (Exception ex)
             {
