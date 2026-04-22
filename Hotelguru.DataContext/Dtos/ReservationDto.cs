@@ -32,7 +32,6 @@ namespace Hotelguru.DataContext.Dtos
     }
     public class ReservationBenefitDto
     {
-        public int ReservationId { get; set; }
         public int BenefitId { get; set; }
         public int Quantity { get; set; }
     }

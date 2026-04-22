@@ -19,6 +19,17 @@ namespace hotelguru.Controllers
             try
             {
                 var result = await _reservationService.ReservationCreateAsync(dto);
+                foreach (var benefit in dto.ReservationBenefits)
+                {
+                    var addBenefitDto = new ReservationBenefitCreateDto
+                    {
+                        ReservationId = result.Id,
+                        BenefitId = benefit.BenefitId,
+                        Quantity = benefit.Quantity
+                    };
+                    await _reservationService.ReservationAddBenefitAsync(addBenefitDto);
+                }
+                result = await _reservationService.ReservationInfoByIDAsync(result.Id);
                 return Ok(result);
             }
             catch (Exception ex)
