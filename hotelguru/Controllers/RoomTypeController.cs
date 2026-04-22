@@ -1,139 +1,69 @@
-﻿using Hotelguru.DataContext.Context;
+﻿using Microsoft.AspNetCore.Mvc;
+using Hotelguru.Services;
 using Hotelguru.DataContext.Dtos;
-using Hotelguru.DataContext.Entities;
-using Microsoft.AspNetCore.Mvc;
-
 namespace hotelguru.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class RoomTypeController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        
-        public RoomTypeController(AppDbContext context)
+        private readonly IRoomTypeService _roomTypeService;
+
+        public RoomTypeController(IRoomTypeService roomTypeService)
         {
-            _context = context;
+            _roomTypeService = roomTypeService;
         }
-
-
-        // POST /api/RoomType/createRoomType
-        [HttpPost("createRoomType")]
-        // A visszatérési típus a válasz DTO
-        public async Task<ActionResult<RoomTypeDto>> CreateRoomType(RoomTypeCreateDto createDto)
+        [HttpPost]
+        public async Task<ActionResult<RoomTypeDto>> Create(RoomTypeCreateDto dto)
         {
-            // 1. Extra validáció (a [Required] annotációk mellett)
-            if (createDto.Capacity <= 0 || createDto.BasePrice < 0)
+            try
             {
-                return BadRequest("Érvénytelen kapacitás vagy ár.");
+                var result = await _roomTypeService.RoomTypeCreateAsync(dto);
+                return Ok(result);
             }
-
-            // 2. Mapelés DTO-ból Entitásba (itt jön létre a mentendő objektum id nélkül)
-            var roomTypeEntity = new RoomType
+            catch (Exception ex)
             {
-                BedNumber = createDto.BedNumber,
-                Capacity = createDto.Capacity,
-                BasePrice = createDto.BasePrice
-            };
-
-            // 3. Mentés az adatbázisba
-            _context.RoomTypes.Add(roomTypeEntity);
-            await _context.SaveChangesAsync();
-            // A SaveChangesAsync() után az EF Core automatikusan kitölti a roomTypeEntity.Id mezőt az adatbázis által generált értékkel.
-
-            // 4. Mapelés Entitásból válasz DTO-ba
-            var responseDto = new RoomTypeDto
-            {
-                Id = roomTypeEntity.Id,
-                BedNumber = roomTypeEntity.BedNumber,
-                Capacity = roomTypeEntity.Capacity,
-                BasePrice = roomTypeEntity.BasePrice
-            };
-
-            // 5. Válasz a 201 Created státuszkóddal és a DTO-val
-            return CreatedAtAction(nameof(GetRoomType), new { id = roomTypeEntity.Id }, responseDto);
+                return BadRequest(ex.Message);
+            }
         }
-
-        // GET /api/RoomType/{id}
-        [HttpGet("{id}")]
-        // 1. A visszatérési típust RoomType-ról RoomTypeDto-ra módosítjuk
-        public async Task<ActionResult<RoomTypeDto>> GetRoomType(int id)
+        [HttpPut("{roomTypeID}")]
+        public async Task<ActionResult<RoomTypeDto>> Update(int roomTypeID, RoomTypeUpdateDto dto)
         {
-            // 2. Lekérjük az entitást az adatbázisból
-            var roomTypeEntity = await _context.RoomTypes.FindAsync(id);
-
-            // Ha nincs ilyen id, 404-et adunk vissza
-            if (roomTypeEntity == null)
+            try
             {
-                return NotFound();
+                var result = await _roomTypeService.RoomTypeUpdateAsync(roomTypeID, dto);
+                return Ok(result);
             }
-
-            // 3. Mapelés: Létrehozzuk a DTO-t, és beletöltjük az entitás adatait
-            var roomTypeDto = new RoomTypeDto
+            catch (Exception ex)
             {
-                Id = roomTypeEntity.Id,
-                BedNumber = roomTypeEntity.BedNumber,
-                Capacity = roomTypeEntity.Capacity,
-                BasePrice = roomTypeEntity.BasePrice
-            };
-
-            // 4. Az entitás helyett a biztonságos DTO-t adjuk vissza a kliensnek
-            return roomTypeDto;
+                return BadRequest(ex.Message);
+            }
         }
-
-        // PUT /api/RoomType/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRoomType(int id, RoomTypeUpdateDto updateDto)
+        [HttpDelete("{roomTypeID}")]
+        public async Task<ActionResult> Delete(int roomTypeID)
         {
-            // 1. Megkeressük a módosítandó entitást az adatbázisban
-            var roomTypeEntity = await _context.RoomTypes.FindAsync(id);
-
-            // Ha nem létezik, 404 hiba
-            if (roomTypeEntity == null)
+            try
             {
-                return NotFound();
+                var result = await _roomTypeService.RoomTypeDeleteAsync(roomTypeID);
+                return Ok(result);
             }
-
-            // 2. Extra validáció
-            if (updateDto.Capacity <= 0 || updateDto.BasePrice < 0)
+            catch (Exception ex)
             {
-                return BadRequest("Érvénytelen kapacitás vagy ár.");
+                return BadRequest(ex.Message);
             }
-
-            // 3. Entitás adatainak felülírása a DTO-ból érkező új adatokkal
-            roomTypeEntity.BedNumber = updateDto.BedNumber;
-            roomTypeEntity.Capacity = updateDto.Capacity;
-            roomTypeEntity.BasePrice = updateDto.BasePrice;
-
-            // 4. Mentés az adatbázisba. Mivel az Entity Framework betöltötte az entitást,
-            // "követi" a változásait (tracking), így elég csak a SaveChangesAsync()-et meghívni.
-            await _context.SaveChangesAsync();
-
-            // 5. Válasz visszaküldése (204 No Content)
-            return NoContent();
         }
-
-        // DELETE /api/RoomType/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRoomType(int id)
+        [HttpGet]
+        public async Task<ActionResult<List<RoomTypeDto>>> GetAll()
         {
-            // 1. Megkeressük az entitást
-            var roomTypeEntity = await _context.RoomTypes.FindAsync(id);
-
-            // Ha nincs meg, 404
-            if (roomTypeEntity == null)
+            try
             {
-                return NotFound();
+                var result = await _roomTypeService.RoomTypesGetAllAsync();
+                return Ok(result);
             }
-
-            // 2. Eltávolítjuk a memóriában lévő adathalmazból
-            _context.RoomTypes.Remove(roomTypeEntity);
-
-            // 3. Véglegesítjük a törlést az adatbázisban
-            await _context.SaveChangesAsync();
-
-            // 4. Válasz visszaküldése (204 No Content)
-            return NoContent();
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
