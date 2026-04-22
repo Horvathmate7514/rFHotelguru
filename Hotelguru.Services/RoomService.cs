@@ -47,7 +47,7 @@ namespace Hotelguru.Services
         }
         public async Task<RoomDto> RoomGetByIdAsync(int id)
         {
-            var room = await _context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+            var room = await _context.Rooms.Include(r => r.RoomFacilities).FirstOrDefaultAsync(r => r.Id == id);
             if (room == null)
             {
                 throw new Exception("Room not found.");

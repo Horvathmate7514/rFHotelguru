@@ -54,15 +54,7 @@ namespace Hotelguru.Services
                     Status = "Requested",
                     ReservationBenefits = new List<ReservationBenefit>()
                 };
-                foreach (var benefitDto in dto.ReservationBenefits)
-                {
-                    var reservationBenefit = new ReservationBenefit
-                    {
-                        BenefitId = benefitDto.BenefitId,
-                        Quantity = benefitDto.Quantity
-                    };
-                    reservation.ReservationBenefits.Add(reservationBenefit);
-                }
+                
                 _context.Reservations.Add(reservation);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<ReservationDto>(reservation);
@@ -105,7 +97,7 @@ namespace Hotelguru.Services
 
         public async Task<List<ReservationDto>> ReservationListByUserIDAsync(int userID)
         {
-            var reservations = _context.Reservations.Include(r => r.ReservationBenefits).Where(r => r.UserId == userID).ToListAsync();
+            var reservations = await _context.Reservations.Include(r => r.ReservationBenefits).Where(r => r.UserId == userID).ToListAsync();
             if (reservations == null)
             {
                 throw new Exception("Reservations not found.");
@@ -117,7 +109,7 @@ namespace Hotelguru.Services
         }
         public async Task<ReservationDto> ReservationInfoByIDAsync(int reservationID)
         {
-            var reservation = await _context.Reservations.FirstOrDefaultAsync(r => r.Id == reservationID);
+            var reservation = await _context.Reservations.Include(r => r.ReservationBenefits).FirstOrDefaultAsync(r => r.Id == reservationID);
             if (reservation == null)
             {
                 throw new Exception("Reservation not found.");
