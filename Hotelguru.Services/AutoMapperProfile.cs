@@ -40,6 +40,12 @@ namespace Hotelguru.Services
             CreateMap<FacilityUpdateDto, Facility>();
             CreateMap<Invoice, InvoiceDto>();
 
+            CreateMap<Benefit, BenefitDto>();
+            CreateMap<BenefitCreateDto, Benefit>();
+            CreateMap<BenefitUpdateDto, Benefit>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+
+
         }
     }
 }
