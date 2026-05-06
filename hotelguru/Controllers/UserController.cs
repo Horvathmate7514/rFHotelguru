@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]/[action]")]
     public class UserController : ControllerBase
     {
@@ -18,6 +20,7 @@ namespace hotelguru.Controllers
 
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<ActionResult<UserDto>> Register(UserRegisterDto dto)
         {
             try
@@ -34,23 +37,32 @@ namespace hotelguru.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<ActionResult<UserDto>> Login(UserLoginDto dto)
+        [HttpPost("Login")]
+        [AllowAnonymous]
+        public async Task<ActionResult> Login([FromBody] UserLoginDto dto)
         {
-
-            var user = await _userService.LoginAsync(dto);
-
-            if (user == null)
+            try
             {
+                // Meghívjuk a Service-t, ami most már egy stringet (a tokent) ad vissza
+                var token = await _userService.LoginAsync(dto);
 
-                return Unauthorized("Hibás email cím vagy jelszó!");
+                // Visszaadjuk a tokent egy egyszerű JSON objektumban
+                return Ok(new { token = token });
             }
-
-            return Ok(user);
+            catch (UnauthorizedAccessException ex)
+            {
+                // Ha rossz a jelszó vagy az email
+                return Unauthorized(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // 3. PROFIL LEKÉRDEZÉS (GET: api/user/5)
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDto>> GetProfile(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -64,6 +76,7 @@ namespace hotelguru.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDto>> Update(int id, UserUpdateDto dto)
         {
             try
@@ -82,6 +95,7 @@ namespace hotelguru.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<List<UserDto>>> GetAll()
         {
             try

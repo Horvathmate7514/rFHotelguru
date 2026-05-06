@@ -2,6 +2,7 @@
 using Hotelguru.DataContext.Dtos;
 using Hotelguru.DataContext.Entities;
 using Hotelguru.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,7 @@ namespace Hotelguru.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<BenefitDto>> Create(BenefitCreateDto dto)
         {
             try
@@ -34,6 +36,7 @@ namespace Hotelguru.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<BenefitDto>>> GetAll()
         {
             try
@@ -48,6 +51,7 @@ namespace Hotelguru.Controllers
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<BenefitDto>> GetById(int id)
         {
             try
@@ -63,6 +67,7 @@ namespace Hotelguru.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<BenefitDto>> Update(int id, BenefitUpdateDto dto)
         {
             try
@@ -78,6 +83,7 @@ namespace Hotelguru.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult> Delete(int id)
         {
             try

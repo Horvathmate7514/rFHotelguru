@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
@@ -14,6 +15,7 @@ namespace hotelguru.Controllers
             _roomTypeService = roomTypeService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<RoomTypeDto>> Create(RoomTypeCreateDto dto)
         {
             try
@@ -27,6 +29,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut("{roomTypeID}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<RoomTypeDto>> Update(int roomTypeID, RoomTypeUpdateDto dto)
         {
             try
@@ -40,6 +43,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpDelete("{roomTypeID}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult> Delete(int roomTypeID)
         {
             try
@@ -53,6 +57,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<List<RoomTypeDto>>> GetAll()
         {
             try
