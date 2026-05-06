@@ -24,6 +24,8 @@ namespace Hotelguru.Services
         Task<UserDto?> GetUserByIdAsync(int id);
         Task<UserDto> UpdateUserAsync(int id, UserUpdateDto dto);
         Task<List<UserDto>> UserGetAllAsync();
+        Task<UserDto> UserLinkRoleAsync(UserLinkRoleDto dto);
+        Task<UserDto> UserDetachRoleAsync(UserLinkRoleDto dto);
     }
     public class UserService : IUserService
     {
@@ -41,6 +43,7 @@ namespace Hotelguru.Services
         public async Task<UserDto> RegisterAsync(UserRegisterDto dto)
         {
             var user = _mapper.Map<DataContext.Entities.User>(dto);
+            user.Roles = new List<Role>();
             var guestRole = _context.Roles.FirstOrDefault(r => r.Name == "Guest");
             if (guestRole != null)
             {
@@ -121,6 +124,53 @@ namespace Hotelguru.Services
             }
 
             return await GenerateToken(user);
+        }
+
+        public async Task<UserDto> UserLinkRoleAsync(UserLinkRoleDto dto)
+        {
+            var user = await _context.Users
+                .Include(u => u.Address)
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == dto.UserId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("A felhasználó nem található.");
+            }
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == dto.RoleId);
+            if (role == null)
+            {
+                throw new KeyNotFoundException("A szerep nem található.");
+            }
+            if (!user.Roles.Any(r => r.Id == role.Id))
+            {
+                user.Roles.Add(role);
+                await _context.SaveChangesAsync();
+            }
+            return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<UserDto> UserDetachRoleAsync(UserLinkRoleDto dto)
+        {
+            var user = await _context.Users
+                .Include(u => u.Address)
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == dto.UserId);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("A felhasználó nem található.");
+            }
+            var role = await _context.Roles.FirstOrDefaultAsync(r => r.Id == dto.RoleId);
+            if (role == null)
+            {
+                throw new KeyNotFoundException("A szerep nem található.");
+            }
+            var userRole = user.Roles.FirstOrDefault(r => r.Id == role.Id);
+            if (userRole != null)
+            {
+                user.Roles.Remove(userRole);
+                await _context.SaveChangesAsync();
+            }
+            return _mapper.Map<UserDto>(user);
         }
 
         private async Task<string> GenerateToken(User user)
