@@ -26,6 +26,7 @@ namespace Hotelguru.Services
         Task<List<UserDto>> UserGetAllAsync();
         Task<UserDto> UserLinkRoleAsync(UserLinkRoleDto dto);
         Task<UserDto> UserDetachRoleAsync(UserLinkRoleDto dto);
+        Task<bool> UserDeleteAsync(int userId);
     }
     public class UserService : IUserService
     {
@@ -49,7 +50,14 @@ namespace Hotelguru.Services
             {
                 user.Roles.Add(guestRole);
             }
-
+            if(_context.Users.ToList().Count() == 0)
+            {
+                var adminRole = _context.Roles.FirstOrDefault(r => r.Name == "Admin");
+                if (adminRole != null)
+                {
+                    user.Roles.Add(adminRole);
+                }
+            }
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
@@ -171,6 +179,35 @@ namespace Hotelguru.Services
                 await _context.SaveChangesAsync();
             }
             return _mapper.Map<UserDto>(user);
+        }
+
+        public async Task<bool> UserDeleteAsync(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.Address)
+                .Include(u => u.Roles)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            // Remove user from roles
+            if (user.Roles != null && user.Roles.Any())
+            {
+                user.Roles.Clear();
+            }
+
+            // Remove address if exists
+            if (user.Address != null)
+            {
+                _context.Addresses.Remove(user.Address);
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         private async Task<string> GenerateToken(User user)
