@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getAllRooms, getAvailableRoomsInDateRange, getRoomById } from '../network/room.api'
+import type { Room } from '../network/room.api' // Javítás: Room típus importálása
 import { getAllRoomTypes } from '../network/roomType.api'
-import { useQuery as useRQQuery } from '@tanstack/react-query'
+import type { RoomType } from '../network/roomType.api'
 import { Box, Card, CardContent, CardActions, Typography, Button, CircularProgress, Chip, Grid, TextField } from '@mui/material'
 import heroImg from '../assets/hero.png'
 import { useNavigate } from 'react-router-dom'
 import HotelIcon from '@mui/icons-material/Hotel'
-import type {RoomType} from '../network/roomType.api'
 
 export default function RoomsList() {
   const navigate = useNavigate()
@@ -19,12 +19,13 @@ export default function RoomsList() {
     queryFn: () => getAllRooms(),
   })
 
-  const { data: roomTypes } = useRQQuery<RoomType[]>({
+  // Javítás: useRQQuery helyett a sima useQuery használata
+  const { data: roomTypes } = useQuery<RoomType[]>({
     queryKey: ['roomTypes'],
     queryFn: () => getAllRoomTypes()
   })
 
-  const { data: roomDetails } = useRQQuery<Room[]>({
+  const { data: roomDetails } = useQuery<Room[]>({
     queryKey: ['roomDetails', rooms?.map(r => r.id)],
     queryFn: async () => {
       if (!rooms) return []
@@ -69,7 +70,7 @@ export default function RoomsList() {
         </Typography>
       </Box>
 
-    <Box sx={{ mb: 3, textAlign: 'center' }}>
+      <Box sx={{ mb: 3, textAlign: 'center' }}>
         <Typography variant="subtitle1" sx={{ mb: 1 }}>Mikorra keres szobát?</Typography>
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 2, flexWrap: 'wrap', alignItems: 'center' }}>
           <TextField
@@ -120,7 +121,6 @@ export default function RoomsList() {
       </Box>    
       <Typography variant="h4" component="h2" fontWeight="bold" sx={{ mb: 4, px: 2, color: 'text.primary', textAlign: 'center' }}>Kínálatunk</Typography>
 
-      {/* ITT A JAVÍTÁS: Egy max szélességű középre zárt Box és justifyContent="center" a Grid-nek */}
       <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
         <Grid container spacing={4} justifyContent="center" sx={{ px: 2 }}>
           {listToRender && listToRender.length === 0 && (
@@ -147,9 +147,12 @@ export default function RoomsList() {
                   <Box sx={{ position: 'relative' }}>
                     <Box
                       component="img"
-                      src={ `https://loremflickr.com/640/480/room` }
+                      src={`https://loremflickr.com/640/480/room`}
                       alt={room.title || `Room ${room.id}`}
-                      onError={(e: React.SVGProps<SVGSVGElement>) => { e.currentTarget.src = heroImg }}
+                      // Javítás: A helyes esemény típus képnél a React.SyntheticEvent<HTMLImageElement, Event>
+                      onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => { 
+                        e.currentTarget.src = heroImg 
+                      }}
                       style={{ width: '100%', height: 260, objectFit: 'cover', display: 'block' }}
                     />
                     {room.roomType?.name && (

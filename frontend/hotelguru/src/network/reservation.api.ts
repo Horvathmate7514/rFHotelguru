@@ -13,11 +13,11 @@ export type Reservation = {
     checkInDate: Date
     checkOutDate: Date
     status: string
-  reservationBenefits?: { serviceId: number, quantity: number }[]
+  reservationBenefits?: { benefitId: number, quantity: number }[]
 }
 
 export type ReservationBenefit = {
-    serviceId: number
+    benefitId: number
     quantity: number
 }
 
@@ -41,12 +41,11 @@ export const getReservationById = async (reservationId: number) => {
 export const createReservation = async (payload: { reservation: Reservation }) => {
   const raw = { ...(payload.reservation || {}) } as Reservation
 
-  if (raw.id === 0) delete raw.id
-
   raw.reservationBenefits = raw.reservationBenefits ?? []
 
+  const body = raw.id === 0 ? (({ id, ...rest }) => rest)(raw) : raw
 
-  const res = await axios.post(`${API_BASE_URL}/Create`, raw)
+  const res = await axios.post(`${API_BASE_URL}/Create`, body)
   return res.data
 }
 
@@ -103,10 +102,10 @@ export const checkOutReservation = async (reservationId: number) => {
 }
 
 
-export const addServiceToReservation = async (reservationId: number, serviceId: number, quantity: number) => {
+export const addServiceToReservation = async (reservationId: number, benefitId: number, quantity: number) => {
   const data = {
     reservationId,
-    serviceId,
+    benefitId,
     quantity
   };
   const res = await axios.put(`${API_BASE_URL}/AddService`, data)

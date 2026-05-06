@@ -1,4 +1,5 @@
     import axios from "axios";
+import type { RoomType } from "./roomType.api";
 
     const API_BASE_URL = 'https://localhost:7133/api/Room'
 
