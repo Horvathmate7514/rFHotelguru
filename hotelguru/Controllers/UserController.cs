@@ -108,5 +108,49 @@ namespace hotelguru.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPut]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<UserDto>> LinkRole(UserLinkRoleDto dto)
+        {
+            try
+            {
+                var result = await _userService.UserLinkRoleAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<UserDto>> DetachRole(UserLinkRoleDto dto)
+        {
+            try
+            {
+                var result = await _userService.UserDetachRoleAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<bool>> DeleteUser(int userId)
+        {
+            try
+            {
+                var result = await _userService.UserDeleteAsync(userId);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
