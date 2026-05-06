@@ -139,7 +139,7 @@ namespace Hotelguru.Services
             var user = await _context.Users
                 .Include(u => u.Address)
                 .Include(u => u.Roles)
-                .FirstOrDefaultAsync(u => u.Id == dto.UserId);
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null)
             {
                 throw new KeyNotFoundException("A felhasználó nem található.");
@@ -162,7 +162,7 @@ namespace Hotelguru.Services
             var user = await _context.Users
                 .Include(u => u.Address)
                 .Include(u => u.Roles)
-                .FirstOrDefaultAsync(u => u.Id == dto.UserId);
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null)
             {
                 throw new KeyNotFoundException("A felhasználó nem található.");
