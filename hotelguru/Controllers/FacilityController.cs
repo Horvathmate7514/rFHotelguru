@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace hotelguru.Controllers
             _facilityService = facilityService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<FacilityDto>> Create(FacilityCreateDto dto)
         {
             try
@@ -31,6 +33,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<FacilityDto>>> GetAll()
         {
             try
@@ -44,6 +47,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<FacilityDto>> GetById(int id)
         {
             try
@@ -58,6 +62,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<FacilityDto>> Update(int id, FacilityUpdateDto dto)
         {
             try
@@ -72,6 +77,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult> Delete(int id)
         {
             try

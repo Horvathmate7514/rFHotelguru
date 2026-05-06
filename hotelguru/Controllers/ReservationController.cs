@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
@@ -14,6 +15,7 @@ namespace hotelguru.Controllers
             _reservationService = reservationService;
         }
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ReservationDto>> Create(ReservationCreateDto dto)
         {
             try
@@ -38,6 +40,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult<ReservationDto>> Cancel(ReservationCancelDto dto)
         {
             try
@@ -51,6 +54,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<List<ReservationDto>>> GetAll()
         {
             try
@@ -64,6 +68,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet("{userID}")]
+        [Authorize]
         public async Task<ActionResult<List<ReservationDto>>> ListByUserID(int userID)
         {
             try
@@ -77,6 +82,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet("{reservationID}")]
+        [Authorize]
         public async Task<ActionResult<ReservationDto>> InfoByID(int reservationID)
         {
             try
@@ -90,6 +96,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPost("{userID}/{reservationID}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<bool>> RequestAccept(int userID, int reservationID)
         {
             try
@@ -103,6 +110,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPost("{userID}/{reservationID}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<bool>> RequestDeny(int userID, int reservationID)
         {
             try
@@ -117,6 +125,7 @@ namespace hotelguru.Controllers
         }
 
         [HttpPut("check-in")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<ReservationDto>> CheckIn(ReservationCheckInDto dto)
         {
             try
@@ -131,6 +140,7 @@ namespace hotelguru.Controllers
         }
 
         [HttpPut("check-out")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<ReservationDto>> CheckOut(ReservationCheckOutDto dto)
         {
             try
@@ -144,6 +154,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<ReservationDto>> AddService(ReservationBenefitCreateDto dto)
         {
             try
@@ -157,6 +168,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPost("{reservationId}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<InvoiceDto>> GenerateInvoice(int reservationId, [FromBody] int issuedBy)
         {
             try

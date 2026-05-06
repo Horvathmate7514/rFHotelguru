@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
@@ -13,6 +14,7 @@ namespace hotelguru.Controllers
             _roleService = roleService;
         }
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RoleDto>> Create(RoleCreateDto dto)
         {
             try
@@ -26,6 +28,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<RoleDto>> Delete(RoleDeleteDto dto)
         {
             try
@@ -39,6 +42,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<List<RoleDto>>> List()
         {
             try

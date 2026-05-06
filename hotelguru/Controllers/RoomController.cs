@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Hotelguru.DataContext.Dtos;
 using Hotelguru.Services;
-using Hotelguru.DataContext.Dtos;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace hotelguru.Controllers
 {
     [ApiController]
@@ -15,6 +16,7 @@ namespace hotelguru.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<RoomDto>>> GetAll()
         {
             try
@@ -28,6 +30,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<RoomDto>> GetById(int id)
         {
             try
@@ -41,6 +44,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPost]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<RoomDto>> Create(RoomCreateDto dto)
         {
             try
@@ -54,6 +58,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult<RoomDto>> Update(int id, RoomUpdateDto dto)
         {
             try
@@ -67,6 +72,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult> Delete(int id)
         {
             try
@@ -87,6 +93,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpPut("{roomId}/{facilityId}")]
+        [Authorize(Roles = "Admin, Receptionist")]
         public async Task<ActionResult> AddFacility(RoomFacilityCreateDto dto)
         {
             try
@@ -107,6 +114,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet("{startDate}/{endDate}")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<RoomDto>>> GetAvailableInDateRange(DateTime startDate, DateTime endDate)
         {
             try
