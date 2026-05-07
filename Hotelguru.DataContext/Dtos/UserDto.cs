@@ -63,7 +63,7 @@ namespace Hotelguru.DataContext.Dtos
 
     public class UserLinkRoleDto
     {
-        public string Email { get; set; }
+        public int UserId { get; set; }
         public int RoleId { get; set; }
     }
 }
