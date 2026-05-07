@@ -54,7 +54,7 @@ namespace Hotelguru.Services
                     Status = "Requested",
                     ReservationBenefits = new List<ReservationBenefit>()
                 };
-                
+
                 _context.Reservations.Add(reservation);
                 await _context.SaveChangesAsync();
                 return _mapper.Map<ReservationDto>(reservation);
@@ -233,32 +233,34 @@ namespace Hotelguru.Services
             // 1. Foglalás betöltése az összes szükséges kapcsolódó adattal
             var reservation = await _context.Reservations
                 .Include(r => r.Room)
+                    .ThenInclude(room => room.RoomType) // <--- JAVÍTÁS 1: Ezt be kell húzni, hogy lássuk az Alapárat!
                 .Include(r => r.ReservationBenefits)
                     .ThenInclude(rb => rb.Benefit)
                 .FirstOrDefaultAsync(r => r.Id == reservationId);
 
             if (reservation == null) throw new Exception("Foglalás nem található.");
 
-            // 2. Szoba árának kiszámítása (FromDate és ToDate közötti éjszakák)
-            // Megjegyzés: A .Days kiszámolja a különbséget
+           
             var nights = (reservation.ToDate - reservation.FromDate).Days;
-            if (nights <= 0) nights = 1; // Ha aznap távozik, akkor is 1 éjszaka
+            if (nights <= 0) nights = 1;
 
-            decimal roomTotal = (decimal)(nights * reservation.Room.PricePerNight);
+            // Megnézzük, van-e egyedi ára. Ha NULL, akkor a RoomType alapárát használjuk. Ha az is NULL lenne valamiért, akkor 0.
+            decimal actualPricePerNight = reservation.Room.PricePerNight ?? reservation.Room.RoomType?.BasePrice ?? 0m;
+
+            decimal roomTotal = nights * actualPricePerNight;
 
             // 3. Szolgáltatások (Benefits) árának kiszámítása
-            // Itt a Quantity-t és a Service.Price-t szorozzuk össze
             decimal serviceTotal = reservation.ReservationBenefits
                 .Sum(rb => rb.Quantity * rb.Benefit.Price);
 
-            // 4. Az új Invoice objektum összeállítása a te entitásod alapján
+            // 4. Az új Invoice objektum összeállítása
             var invoice = new Invoice
             {
                 ReservationId = reservationId,
                 RoomTotal = roomTotal,
                 ServiceTotal = serviceTotal,
                 GrandTotal = roomTotal + serviceTotal,
-                IssuedBy = employeeId, // Az alkalmazott ID-ja, aki generálja
+                IssuedBy = employeeId,
                 IssuedAt = DateTime.Now
             };
 

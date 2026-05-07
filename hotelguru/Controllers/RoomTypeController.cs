@@ -57,7 +57,7 @@ namespace hotelguru.Controllers
             }
         }
         [HttpGet]
-        [Authorize(Roles = "Admin, Receptionist")]
+        [AllowAnonymous]
         public async Task<ActionResult<List<RoomTypeDto>>> GetAll()
         {
             try
