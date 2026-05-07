@@ -9,14 +9,14 @@ namespace Hotelguru.DataContext.Dtos
 {
     public class UserDto
     {
-        
+
         public int Id { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
         public string Mobile { get; set; }
         public AddressDto Address { get; set; }
         public List<RoleDto> Roles { get; set; } = new List<RoleDto>();
-    
+
     }
 
     public class UserRegisterDto
@@ -51,7 +51,7 @@ namespace Hotelguru.DataContext.Dtos
     }
 
 
-    
+
     public class UserUpdateDto
     {
         public string? FullName { get; set; }
@@ -61,4 +61,9 @@ namespace Hotelguru.DataContext.Dtos
     }
 
 
+    public class UserLinkRoleDto
+    {
+        public string Email { get; set; }
+        public int RoleId { get; set; }
+    }
 }
